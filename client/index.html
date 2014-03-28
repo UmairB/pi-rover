@@ -1,0 +1,75 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Pi Rover</title>
+    <style type="text/css">
+        .arrow {
+            width: 100px;
+            height: 100px;
+        }
+        #middle .arrow {
+            float: left;
+        }
+        #video {
+            width: 200px;
+            height: 200px;
+            float: left;
+        }
+        #forward {
+            background: url('/images/top.png') no-repeat;
+            margin-left: 145px;
+        }
+        #left {
+            background: url('/images/left.png') no-repeat;
+            margin-top: 50px;
+        }
+        #right {
+            background: url('/images/right.png') no-repeat;
+            margin-top: 50px;
+        }
+        #back {
+            background: url('/images/down.png') no-repeat;
+            margin-left: 145px;
+        }
+        .clear-left {
+            clear: left;
+        }
+    </style>
+    <script type="text/javascript" src="/scripts/jquery-2.1.0.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#forward, #right, #back, #left").mousedown(function () {
+                move($(this).prop("id"));
+            });
+            $("#forward, #right, #back, #left").mouseup(function () {
+                stop();
+            });
+        });
+        function move(direction) {
+            var url = '/move?direction=' + direction;
+            callws(url);
+        }
+        function stop() {
+            var url = '/move?stop=true';
+            callws(url);
+        }
+        function callws(url) {
+            $.get(url, function(r) {
+                console.log(r); }
+            });
+        }    
+    </script>
+</head>
+<body>
+    <div id="container">
+        <div id="forward" class="arrow"></div>
+        <div id="middle">
+            <div id="left" class="arrow"></div>
+            <div id="video"></div>
+            <div id="right" class="arrow"></div>
+            <div class="clear-left"></div>
+        </div>
+        <div id="back" class="arrow"></div>
+    </div>
+</body>
+</html>
