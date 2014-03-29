@@ -20,6 +20,10 @@ var randomTimeOut = function (callback) {
     }, waitTime);
 }
 
+module.exports.init = function (callback) {
+    callback(null);
+}
+
 module.exports.move = function(direction, callback) {
     var _d = direction ? direction.toLowerCase() : direction;
     if (!_d) {

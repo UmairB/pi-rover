@@ -3,9 +3,9 @@ var async = require("async");
 
 var directions = {
     "forward": [19, 24], 
-    "back": [], 
-    "left": [], 
-    "right": []
+    "back": [21, 26], 
+    "left": [21, 24], 
+    "right": [19, 26]
 };
 
 var getPins = function(d) {
@@ -24,6 +24,22 @@ var openGpioPinCalls = function(pins, mode) {
     });
 };
 
+module.exports.init = function(callback) {
+    // init the direction pins
+    var allPins = [];
+    for (var i in directions) {
+        var pins = directions[i];
+        for (var p = 0, _length = pins.length; p < _length; p++) {
+            if (allPins.indexOf(pins[p]) === -1) {
+                allPins.push(p);
+            }
+        }
+    }
+    
+    var cbs = openGpioPinCalls(allPins, "output");
+    async.parallel(cbs, callback);
+};
+
 module.exports.move = function(direction, callback) {
     var _d = direction ? direction.toLowerCase() : direction;
     if (!_d) {
@@ -37,24 +53,21 @@ module.exports.move = function(direction, callback) {
         return;
     }
     
-    var cbs = openGpioPinCalls(pins, "output");
-    async.parallel(cbs, function(err) {
-       if (err) {
-           callback(err);
-       } else {
-           pins.forEach(function(p) {
-               gpio.write(p);
-           });
-           
-           callback(null, pins);
-       }
+    pins.forEach(function(p) {
+        gpio.write(p, 1);
     });
+    
+    callback(null, pins);
 };
 
-module.exports.stop = function() {
+module.exports.stop = function(callback) {
     for (var i in directions) {
         directions[i].forEach(function(p) {
-            gpio.close(p);
+            gpio.write(p, 0, function() {
+               //gpio.close(p); 
+            });
         });
     }
+    
+    callback(null, true);
 };

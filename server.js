@@ -31,7 +31,18 @@ router.use('/move', function(req, res) {
     }
 });
 
-server.listen(process.env.PORT || 80, process.env.IP || "192.168.0.18", function() {
-    var addr = server.address();
-    console.log("server listening at", addr.address + ":" + addr.port);
+rover.init(function (err) {
+    if (!err) {
+        server.listen(process.env.PORT || 80, process.env.IP || "192.168.0.18", function() {
+            var addr = server.address();
+            console.log("server listening at", addr.address + ":" + addr.port);
+        });
+    }
 });
+
+// process.on('SIGTERM', function () {
+//     console.log('terminating...');
+//     server.close(function() {
+//         console.log('Turning off server.'); 
+//     });
+// });
