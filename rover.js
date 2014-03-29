@@ -1,31 +1,60 @@
-// var gpio = require("pi-gpio");
+var gpio = require("pi-gpio");
+var async = require("async");
 
-// var directions = ['forward', 'back', 'left', 'right'];
+var directions = {
+    "forward": [19, 24], 
+    "back": [], 
+    "left": [], 
+    "right": []
+};
 
-// var getPins = function(d) {
-// 	var pins;
-// 	switch (d) {
-//         	case 'forward':
-// 			pins = [19, 24];
-// 		break;
-//         }
-// };
+var getPins = function(d) {
+    for (var i in directions) {
+        if (i === d) {
+            return directions[i];
+        }
+    }
+};
 
-// module.exports.move = function(direction, callback) {
-//     if (!direction) {
-//     	callback(new Error('Direction was not specified'));
-//     } else {
-//     	var d = direction.toLower();
-//         if (directions.indexOf(d) >= 0) {
-// 		var pins = [];
-                
-// 	} else {
-// 		callback(new Error('Invalid direction'));
-// 	}
-//     }
-// };
+var openGpioPinCalls = function(pins, mode) {
+    return pins.map(function(p) {
+        return function(callback) {
+            gpio.open(p, mode, callback);
+        };
+    });
+};
 
-// module.exports.stop = function() {
+module.exports.move = function(direction, callback) {
+    var _d = direction ? direction.toLowerCase() : direction;
+    if (!_d) {
+        callback(new Error('Direction was not specified'));
+        return;
+    }
+    
+    var pins = getPins(_d);
+    if (!pins) {
+        callback(new Error('Invalid direction'));
+        return;
+    }
+    
+    var cbs = openGpioPinCalls(pins, "output");
+    async.parallel(cbs, function(err) {
+       if (err) {
+           callback(err);
+       } else {
+           pins.forEach(function(p) {
+               gpio.write(p);
+           });
+           
+           callback(null, pins);
+       }
+    });
+};
 
-// };
-
+module.exports.stop = function() {
+    for (var i in directions) {
+        directions[i].forEach(function(p) {
+            gpio.close(p);
+        });
+    }
+};
