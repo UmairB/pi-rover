@@ -1,7 +1,7 @@
 var http = require('http'); 
 var path = require('path'); 
 var express = require('express');
-var rover = require('./rover.test.js');
+var rover = require('./rover.js');
 
 var router = express();
 var server = http.createServer(router);
@@ -16,6 +16,8 @@ var moveRetObj = function (error, value) {
 router.use(express.static(path.resolve(__dirname, 'client')));
 
 router.use('/move', function(req, res) {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    
     var params = req.query,
         cb = function(err, value) {
             var obj = moveRetObj(err ? err.message : err, value);

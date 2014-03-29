@@ -51,7 +51,7 @@
     </style>
     <script type="text/javascript" src="/scripts/jquery-2.1.0.min.js"></script>
     <script type="text/javascript">
-        var debug = false;
+        var debug = true;
         $(document).ready(function () {
             $("#forward, #right, #back, #left").on("mousedown touchstart", function () {
                 move($(this).prop("id"));
@@ -65,7 +65,7 @@
             var url = '/move?direction=' + direction;
             $.get(url, function(r) {
                 if (debug) {
-                    $("#debug").append('<p>' + direction + '</p>');
+                    $("#debug").append('<p>' + direction + ' (error:' + r.error + ')</p>');
                 }
             });
         }
@@ -73,7 +73,7 @@
             var url = '/move?stop=true';
             $.get(url, function(r) {
                 if (debug) { 
-                    $("#debug").append('<p>stop</p>');
+                    $("#debug").append('<p>stop (error:' + r.error + ')</p>');
                 }
             });
         }
