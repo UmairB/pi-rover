@@ -1,7 +1,7 @@
 var http = require('http'); 
 var path = require('path'); 
 var express = require('express');
-var rover = require('./rover.js');
+var rover = require('./rover.test.js');
 
 var router = express();
 var server = http.createServer(router);
@@ -16,7 +16,7 @@ var moveRetObj = function (error, value) {
 router.use(express.static(path.resolve(__dirname, 'client')));
 
 router.use('/move', function(req, res) {
-    res.writeHead(200, { 'Content-Type': 'application/json' });
+    //res.writeHead(200, { 'Content-Type': 'application/json' });
     
     var params = req.query,
         cb = function(err, value) {
@@ -33,6 +33,8 @@ router.use('/move', function(req, res) {
     }
 });
 
+// if it errors, cleanup and exit
+rover.cleanup();
 rover.init(function (err) {
     if (!err) {
         server.listen(process.env.PORT || 80, process.env.IP || "192.168.0.18", function() {
@@ -40,14 +42,13 @@ rover.init(function (err) {
             console.log("server listening at", addr.address + ":" + addr.port);
         });
     } else {
-        // if it errors, cleanup and exit
-        rover.cleanup();
+        console.log(err);
     }
 });
 
-// process.on('SIGTERM', function () {
-//     console.log('terminating...');
-//     server.close(function() {
-//         console.log('Turning off server.'); 
-//     });
-// });
+process.on('exit', function () {
+    console.log('terminating...');
+    server.close(function() {
+        console.log('Turning off server.'); 
+    });
+});

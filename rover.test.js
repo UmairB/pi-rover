@@ -18,11 +18,15 @@ var randomTimeOut = function (callback) {
         
         callback(err, value);
     }, waitTime);
-}
+};
 
 module.exports.init = function (callback) {
     callback(null);
-}
+};
+
+module.exports.cleanup = function () {
+    //noop
+};
 
 module.exports.move = function(direction, callback) {
     var _d = direction ? direction.toLowerCase() : direction;
