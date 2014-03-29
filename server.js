@@ -37,6 +37,9 @@ rover.init(function (err) {
             var addr = server.address();
             console.log("server listening at", addr.address + ":" + addr.port);
         });
+    } else {
+        // if it errors, cleanup and exit
+        rover.cleanup();
     }
 });
 

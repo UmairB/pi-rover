@@ -16,6 +16,20 @@ var getPins = function(d) {
     }
 };
 
+var getAllPins = function () {
+    var allPins = [];
+    for (var i in directions) {
+        var pins = directions[i];
+        for (var p = 0, _length = pins.length; p < _length; p++) {
+            if (allPins.indexOf(pins[p]) === -1) {
+                allPins.push(pins[p]);
+            }
+        }
+    }
+    
+    return allPins;
+};
+
 var openGpioPinCalls = function(pins, mode) {
     return pins.map(function(p) {
         return function(callback) {
@@ -26,18 +40,16 @@ var openGpioPinCalls = function(pins, mode) {
 
 module.exports.init = function(callback) {
     // init the direction pins
-    var allPins = [];
-    for (var i in directions) {
-        var pins = directions[i];
-        for (var p = 0, _length = pins.length; p < _length; p++) {
-            if (allPins.indexOf(pins[p]) === -1) {
-                allPins.push(p);
-            }
-        }
-    }
+    var allPins = getAllPins();
     
     var cbs = openGpioPinCalls(allPins, "output");
     async.parallel(cbs, callback);
+};
+
+module.exports.cleanup = function (callback) {
+    getAllPins().forEach(function (p) {
+        gpio.close(p); 
+    });
 };
 
 module.exports.move = function(direction, callback) {
