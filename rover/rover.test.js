@@ -21,6 +21,7 @@ var randomTimeOut = function (callback) {
 };
 
 module.exports.init = function (callback) {
+    // noop
     callback(null);
 };
 
