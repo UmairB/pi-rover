@@ -1,5 +1,5 @@
 var fs = require('fs'),
-    exec = require('child_process').exec;
+    spawn = require('child_process').spawn;
 
 var IMAGE_PATH = '/tmp/stream',
     IMAGE_NAME = 'pic.jpg';
@@ -13,19 +13,33 @@ module.exports.start = function() {
     
     if (!cameraProcess) {
         var fullPath = IMAGE_PATH + '/' + IMAGE_NAME;
-        cameraProcess = exec('raspistill -rot 180 -w 640 -h 480 -q 5 -o ' + fullPath + ' -tl 100 -t 9999999 -th 0:0:0', function() {
-            //cameraProcess = null;
-        });
+        cameraProcess = spawn('raspistill', [
+            '-rot', '180', 
+            '-w', '640', 
+            '-h', '480', 
+            '-q', '5', 
+            '-o', fullPath,
+            '-tl', '100',
+            '-t', '9999999',
+            '-th', '0:0:0'
+        ]);
         
-        console.log(cameraProcess);
+        cameraProcess.on('close', function(){
+            console.log('camera process has stopped');
+            cameraProcess = null;
+        });
     }
     
     if (!streamingProcess) { 
-        streamingProcess = exec('LD_LIBRARY_PATH=/usr/local/lib mjpg_streamer -i "input_file.so -f ' + IMAGE_PATH + ' -n ' + IMAGE_NAME + '" -o "output_http.so -w /usr/local/www"', function() {
-            //streamingProcess = null;
-        });
+        streamingProcess = spawn('LD_LIBRARY_PATH=/usr/local/lib mjpg_streamer', [
+            '-i', '"input_file.so -f ' + IMAGE_PATH + ' -n ' + IMAGE_NAME + '"',
+            '-o', '"output_http.so -w /usr/local/www"'
+        ]);
         
-        console.log(streamingProcess);
+        streamingProcess.on('close', function() {
+            console.log('streaming process has stopped');
+            streamingProcess = null;
+        });
     }
 };
 
@@ -42,6 +56,3 @@ module.exports.stop = function() {
         console.log('streaming process is undefined');
     }
 };
-
-module.exports.cameraProcess = cameraProcess;
-module.exports.streamingProcess = streamingProcess;
