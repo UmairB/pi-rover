@@ -19,7 +19,7 @@ module.exports.start = function() {
             '-h', '480', 
             '-q', '5', 
             '-o', fullPath,
-            '-tl', '500',
+            '-tl', '100',
             '-t', '9999999',
             '-th', '0:0:0'
         ]);
