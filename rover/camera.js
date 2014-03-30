@@ -32,11 +32,8 @@ module.exports.start = function() {
     
     if (!streamingProcess) { 
         streamingProcess = spawn('mjpg_streamer', [
-            '-i', '/usr/local/lib/input_file.so',
-            '-f', IMAGE_PATH,
-            '-n', IMAGE_NAME,
-            '-o', '/usr/local/lib/output_http.so',
-            '-w', '/usr/local/www'
+            '-i', '/usr/local/lib/input_file.so -f ' + IMAGE_PATH + ' -n ' + IMAGE_NAME,
+            '-o', '/usr/local/lib/output_http.so -w /usr/local/www'
         ]);
         
         streamingProcess.on('exit', function() {
