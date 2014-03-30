@@ -19,7 +19,7 @@ module.exports.start = function() {
             '-h', '480', 
             '-q', '5', 
             '-o', fullPath,
-            '-tl', '100',
+            '-tl', '500',
             '-t', '9999999',
             '-th', '0:0:0'
         ]);
@@ -32,8 +32,11 @@ module.exports.start = function() {
     
     if (!streamingProcess) { 
         streamingProcess = spawn('mjpg_streamer', [
-            '-i', '"/usr/local/lib/input_file.so -f ' + IMAGE_PATH + ' -n ' + IMAGE_NAME + '"',
-            '-o', '"/usr/local/lib/output_http.so -w /usr/local/www"'
+            '-i', '/usr/local/lib/input_file.so',
+            '-f', IMAGE_PATH,
+            '-n', IMAGE_NAME,
+            '-o', '/usr/local/lib/output_http.so',
+            '-w', '/usr/local/www'
         ]);
         
         streamingProcess.on('exit', function() {
