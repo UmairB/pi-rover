@@ -24,19 +24,19 @@ module.exports.start = function() {
             '-th', '0:0:0'
         ]);
         
-        cameraProcess.on('close', function(){
+        cameraProcess.on('exit', function(){
             console.log('camera process has stopped');
             cameraProcess = null;
         });
     }
     
     if (!streamingProcess) { 
-        streamingProcess = spawn('LD_LIBRARY_PATH=/usr/local/lib mjpg_streamer', [
-            '-i', '"input_file.so -f ' + IMAGE_PATH + ' -n ' + IMAGE_NAME + '"',
-            '-o', '"output_http.so -w /usr/local/www"'
+        streamingProcess = spawn('mjpg_streamer', [
+            '-i', '"/usr/local/lib/input_file.so -f ' + IMAGE_PATH + ' -n ' + IMAGE_NAME + '"',
+            '-o', '"/usr/local/lib/output_http.so -w /usr/local/www"'
         ]);
         
-        streamingProcess.on('close', function() {
+        streamingProcess.on('exit', function() {
             console.log('streaming process has stopped');
             streamingProcess = null;
         });
