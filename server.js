@@ -1,7 +1,7 @@
 var http = require('http'); 
 var path = require('path'); 
 var express = require('express');
-var rover = require('./rover.test.js');
+var rover = require('./rover/rover.test.js');
 
 var router = express();
 var server = http.createServer(router);
