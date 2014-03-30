@@ -38,3 +38,6 @@ module.exports.stop = function() {
         console.log('streaming process is undefined');
     }
 };
+
+module.exports.cameraProcess = cameraProcess;
+module.exports.streamingProcess = streamingProcess;
