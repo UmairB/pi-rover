@@ -1,5 +1,6 @@
-var gpio = require("pi-gpio");
-var async = require("async");
+var gpio = require("pi-gpio"),
+    async = require("async"),
+    camera = require('./camera');
 
 var directions = {
     "forward": [19, 24], 
@@ -44,6 +45,9 @@ module.exports.init = function(callback) {
     
     var cbs = openGpioPinCalls(allPins, "output");
     async.parallel(cbs, callback);
+    
+    // init the camera
+    camera.start();
 };
 
 module.exports.cleanup = function (callback) {
@@ -75,9 +79,7 @@ module.exports.move = function(direction, callback) {
 module.exports.stop = function(callback) {
     for (var i in directions) {
         directions[i].forEach(function(p) {
-            gpio.write(p, 0, function() {
-               //gpio.close(p); 
-            });
+            gpio.write(p, 0);
         });
     }
     
