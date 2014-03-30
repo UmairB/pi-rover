@@ -14,13 +14,13 @@ module.exports.start = function() {
     if (!cameraProcess) {
         var fullPath = IMAGE_PATH + '/' + IMAGE_NAME;
         cameraProcess = exec('raspistill -rot 180 -w 640 -h 480 -q 5 -o ' + fullPath + ' -tl 100 -t 9999999 -th 0:0:0', function() {
-            cameraProcess = null;
+            //cameraProcess = null;
         });
     }
     
     if (!streamingProcess) { 
-        streamingProcess = exec('/usr/local/lib/mjpg_streamer -i "input_file.so -f ' + IMAGE_PATH + ' -n ' + IMAGE_NAME + '" -o "output_http.so -w /usr/local/www"', function() {
-            streamingProcess = null;
+        streamingProcess = exec('LD_LIBRARY_PATH=/usr/local/lib mjpg_streamer -i "input_file.so -f ' + IMAGE_PATH + ' -n ' + IMAGE_NAME + '" -o "output_http.so -w /usr/local/www"', function() {
+            //streamingProcess = null;
         });
     }
 };
