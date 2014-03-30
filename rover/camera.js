@@ -28,9 +28,13 @@ module.exports.start = function() {
 module.exports.stop = function() {
     if (cameraProcess) {
         cameraProcess.kill();
+    } else {
+        console.log('camera process is undefined');
     }
     
     if (streamingProcess) {
         streamingProcess.kill();
+    } else {
+        console.log('streaming process is undefined');
     }
 };
