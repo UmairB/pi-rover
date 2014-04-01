@@ -62,7 +62,7 @@ module.exports.move = function(direction, callback) {
     }
     
     if (!servo) {
-        callback(new Error('Invalid direction. Use up/down or left/right'));
+        callback && callback(new Error('Invalid direction. Use up/down or left/right'));
     } else {
         var current = servoMovement[servo].current;
         if ((direction == 'left' && current < servoMovement[servo].maxLeft) || (direction == 'down' && current < servoMovement[servo].maxDown)) {
@@ -75,10 +75,10 @@ module.exports.move = function(direction, callback) {
             var _c = format(command, servoNumber[servo], current);
             execCommand(_c, function() {
                 servoMovement[servo].current = current;
-                callback(null, true);
+                callback && callback(null, true);
             });
         } else {
-            callback(null, false);
+            callback && callback(null, false);
         }
     }
 };
