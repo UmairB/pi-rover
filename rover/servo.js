@@ -17,14 +17,16 @@ var servoMovement = {
         middle: 120,
         maxUp: 50,
         maxDown: 210,
-        active: false
+        active: false,
+        directions: ['up', 'down']
     },
     tilt: {
         current: 0,
-        middle: 120,
+        middle: 170,
         maxLeft: 250,
         maxRight: 80,
-        active: false
+        active: false,
+        directions: ['left', 'right']
     }
 };
 
@@ -33,37 +35,50 @@ var handleError = function (error, validState, callback) {
     validState = false;
 };
 
-module.exports.reset = function () {
+var execCommand = function(c, callback) {
+    exec(c).on('exit', callback);
+};
+
+module.exports.init = function () {
     var _p = format(command, servoNumber.pan, servoMovement.pan.middle),
         _t = format(command, servoNumber.tilt, servoMovement.tilt.middle);
         
-    exec(_p, function() {}).on('exit', function() {
+    execCommand(_p, function() {
         servoMovement.pan.current = servoMovement.pan.middle;
     });
     
-    exec(_t, function() {}).on('exit', function() {
+    execCommand(_t, function() {
         servoMovement.tilt.current = servoMovement.tilt.middle;
     });
 };
 
-module.exports.move = function(servo, direction, callback) {
-    var validState = true;
-    var _servo = servoNumber[servo];
-    if (!_servo) {
-        handleError('Invalid servo. Use pan or tilt', validState, callback);
+module.exports.move = function(direction, callback) {
+    var servo;
+    for (var m in servoMovement) {
+        var s = servoMovement[m];
+        if (s.directions.indexOf(direction) >= 0) {
+            servo = m;
+        }
     }
     
-    if (servo === 'pan' && direction !== 'up' && direction !== 'down') {
-        handleError('Can only use up and down for the pan servo', validState, callback);
-    } else if (servo === 'tilt' && direction !== 'left' && direction !== 'right') {
-        handleError('Can only use left and right for the tilt servo', validState, callback);
-    }
-    
-    if (validState) {
+    if (!servo) {
+        callback(new Error('Invalid direction. Use up/down or left/right'));
+    } else {
+        var current = servoMovement[servo].current;
+        if ((direction == 'left' && current < servoMovement[servo].maxLeft) || (direction == 'down' && current < servoMovement[servo].maxDown)) {
+            current += 10;
+        } else if ((direction == 'right' && current > servoMovement[servo].maxRight) || (direction == 'up' && current > servoMovement[servo].maxUp)) {
+            current -= 10;
+        }
         
+        if (current != servoMovement[servo].current) {
+            var _c = format(command, servoNumber[servo], current);
+            execCommand(_c, function() {
+                servoMovement[servo].current = current;
+                callback(null, true);
+            });
+        } else {
+            callback(null, false);
+        }
     }
-};
-
-module.exports.stop = function() {
-    
 };
