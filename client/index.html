@@ -9,50 +9,80 @@
             top: 0;
             right: 0;
         }
+        
         #camera-stream {
             width: 100%;
             height: 230px;
+            position: relative;
         }
-        #camera-stream img {
+        #camera-stream > img {
             width: 100%;
             height: 100%;
         }
-        #arrows {
+        #camera-stream .arrow {
+            position: absolute;
+        }
+        #camera-stream .arrow img {
+            width: 60px;
+            height: 60px;
+        }
+        #camera-stream .up {
+            top: 0;
+            left: 50%;
+            margin-left: -30px;
+        }
+        #camera-stream .left {
+            top: 50%;
+            left: 0;
+            margin-top: -30px;
+        }
+        #camera-stream .down {
+            bottom: 0;
+            left: 50%;
+            margin-left: -30px;
+        }
+        #camera-stream .right {
+            top: 50%;
+            right: 0;
+            margin-top: -30px;
+        }
+        
+        
+        #movement {
             position: relative;
             width: 100%;
             height: 230px;
             max-width: 300px;
+            margin: auto;
         }
-        .arrow {
-            width: 100px;
-            height: 100px;
+        #movement .arrow {
             position: absolute;
         }
-        #forward {
-            background: url('/images/top.png') no-repeat;
+        #movement .arrow img {
+            width: 65px;
+            height: 65px;
+        }
+        #movement .forward {
             top: 0;
             left: 50%;
-            margin-left: -50px;
+            margin-left: -32px;
         }
-        #left {
-            background: url('/images/left.png') no-repeat;
+        #movement .left {
             left: 0;
             top: 50%;
-            margin-top: -50px;
+            margin-top: -32px;
         }
-        #right {
-            background: url('/images/right.png') no-repeat;
+        #movement .right {
             right: 0;
             top: 50%;
-            margin-top: -50px;
-            margin-right: -3px;
+            margin-top: -32px;
         }
-        #back {
-            background: url('/images/down.png') no-repeat;
+        #movement .back {
             bottom: 0;
             left: 50%;
-            margin-left: -48px;
+            margin-left: -32px;
         }
+        
         .clear-left {
             clear: left;
         }
@@ -61,8 +91,8 @@
     <script type="text/javascript">
         var debug = false;
         $(document).ready(function () {
-            $("#forward, #right, #back, #left").on("mousedown touchstart", function (e) {
-                move($(this).prop("id"));
+            $("#movement .arrow").on("mousedown touchstart", function (e) {
+                move($(this).data("direction"));
                 e.stopPropagation();
                 e.preventDefault();
             }).on("mouseup touchend", function (e) {
@@ -71,8 +101,18 @@
                 e.preventDefault();
             });
             
+            
+            $("#camera-stream .arrow").on("mousedown touchstart", function (e) {
+                moveServo($(this).data("direction"), function(r){
+                    
+                });
+                
+                e.stopPropagation();
+                e.preventDefault();
+            });
+            
             var imageStream = 'http://' + window.location.hostname + ':8080/?action=stream';
-            $("#camera-stream img").attr("src", imageStream);
+            $("#camera-stream > img").attr("src", imageStream);
         });
         function move(direction) {
             var url = '/move?direction=' + direction;
@@ -81,7 +121,7 @@
                     $("#debug").append('<p>' + direction + ' (error:' + r.error + ', value:' + r.value + ')</p>');
                 }
             });
-        }
+        };
         function stop() {
             var url = '/move?stop=true';
             $.get(url, function(r) {
@@ -89,7 +129,11 @@
                     $("#debug").append('<p>stop (error:' + r.error + ', value:' + r.value + ')</p>');
                 }
             });
-        }
+        };
+        function moveServo(direction, callback) {
+            var url = '/servo?direction=' + direction;
+            $.get(url, callback);
+        };
     </script>
 </head>
 <body>
@@ -97,12 +141,32 @@
     <div id="container">
         <div id="camera-stream">
             <img src="" alt="camera stream" />
+            <div data-direction="up" class="arrow up">
+                <img src="/images/orange_arrow_up.png" alt="up" />
+            </div>
+            <div data-direction="left" class="arrow left">
+                <img src="/images/orange_arrow_left.png" alt="up" />
+            </div>
+            <div data-direction="down" class="arrow down">
+                <img src="/images/orange_arrow_down.png" alt="up" />
+            </div>
+            <div data-direction="right" class="arrow right">
+                <img src="/images/orange_arrow_right.png" alt="up" />
+            </div>
         </div>
-        <div id="arrows">
-            <div id="forward" class="arrow"></div>
-            <div id="left" class="arrow"></div>
-            <div id="right" class="arrow"></div>
-            <div id="back" class="arrow"></div>
+        <div id="movement">
+            <div data-direction="forward" class="arrow forward">
+                <img src="/images/black_arrow_up.jpg" alt="up" />
+            </div>
+            <div data-direction="left" class="arrow left">
+                <img src="/images/black_arrow_left.jpg" alt="up" />
+            </div>
+            <div data-direction="back" class="arrow back">
+                <img src="/images/black_arrow_down.jpg" alt="up" />
+            </div>
+            <div data-direction="right" class="arrow right">
+                <img src="/images/black_arrow_right.jpg" alt="up" />
+            </div>
         </div>
     </div>
 </body>

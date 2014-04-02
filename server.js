@@ -6,9 +6,16 @@ var rover = require('./rover/rover.test.js');
 var router = express();
 var server = http.createServer(router);
 
-var moveRetObj = function (error, value) {
+var roverReturnObject = function (err, value) {
+    var _err;
+    if (typeof err == "string") {
+        _err = err;
+    } else if (err.message) {
+        _err = err.message;
+    }
+    
     return {
-        error: error,
+        error: _err,
         value: value
     };
 };
@@ -16,21 +23,30 @@ var moveRetObj = function (error, value) {
 router.use(express.static(path.resolve(__dirname, 'client')));
 
 router.use('/move', function(req, res) {
-    //res.writeHead(200, { 'Content-Type': 'application/json' });
+    var params = req.query;
     
-    var params = req.query,
-        cb = function(err, value) {
-            var obj = moveRetObj(err ? err.message : err, value);
-            res.json(obj);
-        };
-        
     if (params.direction) {
-        rover.move(params.direction, cb);
+        rover.move(params.direction, function(err, value) {
+            res(roverReturnObject(err, value));
+        });
     } else if (params.stop) {
-        rover.stop(cb);
+        rover.stop(function(err, value) {
+            res(roverReturnObject(err, value));
+        });
     } else {
-        res.json(moveRetObj('Invalid request. Direction or stop not specified.'));
+        res.json(roverReturnObject('Invalid request. Direction or stop not specified.'));
     }
+});
+
+router.use('/servo', function(req, res) {
+   var direction = req.query.direction;
+   if (direction) {
+       rover.moveServo(direction, function(err, value) {
+            res(roverReturnObject(err, value));
+        });
+   } else {
+       res.json(roverReturnObject('Invalid request. Direction not specified.'));
+   }
 });
 
 // if it errors, cleanup and exit

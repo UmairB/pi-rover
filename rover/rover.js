@@ -1,6 +1,7 @@
 var gpio = require("pi-gpio"),
     async = require("async"),
-    camera = require('./camera');
+    camera = require('./camera'),
+    servo = require("./servo");
 
 var directions = {
     "forward": [19, 24], 
@@ -46,6 +47,9 @@ module.exports.init = function(callback) {
     var cbs = openGpioPinCalls(allPins, "output");
     async.parallel(cbs, callback);
     
+    // init the servos
+    servo.init();
+    
     // init the camera
     camera.start();
 };
@@ -85,3 +89,7 @@ module.exports.stop = function(callback) {
     
     callback(null, true);
 };
+
+module.exports.moveServo = function(direction, callback) {
+    servo.move(direction, callback)
+}
