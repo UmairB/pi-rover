@@ -7,11 +7,13 @@ var router = express();
 var server = http.createServer(router);
 
 var roverReturnObject = function (err, value) {
-    var _err;
-    if (typeof err == "string") {
-        _err = err;
-    } else if (err.message) {
-        _err = err.message;
+    var _err = null;
+    if (err !== null) {
+        if (typeof err == "string") {
+            _err = err;
+        } else if (err.message) {
+            _err = err.message;
+        }
     }
     
     return {
@@ -27,11 +29,11 @@ router.use('/move', function(req, res) {
     
     if (params.direction) {
         rover.move(params.direction, function(err, value) {
-            res(roverReturnObject(err, value));
+            res.json(roverReturnObject(err, value));
         });
     } else if (params.stop) {
         rover.stop(function(err, value) {
-            res(roverReturnObject(err, value));
+            res.json(roverReturnObject(err, value));
         });
     } else {
         res.json(roverReturnObject('Invalid request. Direction or stop not specified.'));
@@ -42,7 +44,7 @@ router.use('/servo', function(req, res) {
    var direction = req.query.direction;
    if (direction) {
        rover.moveServo(direction, function(err, value) {
-            res(roverReturnObject(err, value));
+            res.json(roverReturnObject(err, value));
         });
    } else {
        res.json(roverReturnObject('Invalid request. Direction not specified.'));

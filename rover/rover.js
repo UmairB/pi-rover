@@ -92,4 +92,4 @@ module.exports.stop = function(callback) {
 
 module.exports.moveServo = function(direction, callback) {
     servo.move(direction, callback)
-}
+};
