@@ -101,11 +101,14 @@
                 e.preventDefault();
             });
             
-            
             $("#camera-stream .arrow").on("mousedown touchstart", function (e) {
-                moveServo($(this).data("direction"), function(r){
-                    
-                });
+                moveServo.stop = false;
+                moveServo($(this).data("direction"));
+                
+                e.stopPropagation();
+                e.preventDefault();
+            }).on("mouseup touchend", function (e) {
+                moveServo.stop = true;
                 
                 e.stopPropagation();
                 e.preventDefault();
@@ -114,6 +117,7 @@
             var imageStream = 'http://' + window.location.hostname + ':8080/?action=stream';
             $("#camera-stream > img").attr("src", imageStream);
         });
+        
         function move(direction) {
             var url = '/move?direction=' + direction;
             $.get(url, function(r) {
@@ -130,10 +134,30 @@
                 }
             });
         };
-        function moveServo(direction, callback) {
-            var url = '/servo?direction=' + direction;
-            $.get(url, callback);
-        };
+        var moveServo = (function () {
+            function fn (direction) {
+                // check the direction. If it changes, make stop false
+                if (fn._direction !== direction) {
+                    fn.stop = false;
+                    fn._direction = direction;
+                }
+                
+                var url = '/servo?direction=' + direction;
+                $.get(url, fn._cb);
+            };
+            
+            fn._cb = function (r) {
+                if (r.value === true && this.stop === false) {
+                    this(this._direction);
+                } else if (r.value === false) {
+                    this.stop = true;
+                }
+            }
+            
+            fn.stop = false;
+            
+            return fn;
+        })();
     </script>
 </head>
 <body>
