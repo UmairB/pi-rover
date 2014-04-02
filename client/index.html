@@ -107,11 +107,6 @@
                 
                 e.stopPropagation();
                 e.preventDefault();
-            }).on("mouseup touchend", function (e) {
-                moveServo.stop = true;
-                
-                e.stopPropagation();
-                e.preventDefault();
             });
             
             var imageStream = 'http://' + window.location.hostname + ':8080/?action=stream';
@@ -148,13 +143,13 @@
             
             fn._cb = function (r) {
                 if (r.value === true && this.stop === false) {
-                    this(this._direction);
+                    //this(this._direction);
                 } else if (r.value === false) {
                     this.stop = true;
                 }
-            }
+            };
             
-            fn.stop = false;
+            fn.stop = true;
             
             return fn;
         })();
