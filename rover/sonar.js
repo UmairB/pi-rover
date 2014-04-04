@@ -15,7 +15,7 @@ var timeout = 20;
 */
 var sendPulseObj = {
     setUp: function(callback) {
-        gpio.setup(pin, "output", callback);
+        gpio.open(pin, "output", callback);
     },
     cleanPulse: function(callback) {
         gpio.write(pin, 0, callback);
