@@ -14,9 +14,6 @@ var timeout = 20;
     Give a short LOW pulse beforehand to ensure a clean HIGH pulse
 */
 var sendPulseObj = {
-    close: function(callback) {
-        gpio.close(pin, callback);  
-    },
     setUp: function(callback) {
         gpio.open(pin, "output", callback);
     },
@@ -58,8 +55,8 @@ function waitForChange(initial, callback) {
 
 function getDistance(time) {
     // At room temperature and pressure the speed of sound is 340 m/s, time is in milliseconds so
-    var distance2_in_m = 340 * (time * 1000),
-        distance2_in_cm = distance2_in_m / 100;
+    var distance2_in_m = 340 * (time / 1000),
+        distance2_in_cm = distance2_in_m * 100;
         
     // the actual distance is half of distance2_in_cm since the pulse had to travel twice the distance (there and back)
     return distance2_in_cm / 2;
