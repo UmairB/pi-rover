@@ -76,6 +76,8 @@ function getPulseTime (callback) {
                     var time = end - start,
                         distance = getDistance(time);
                         
+                    console.log(err1);
+                    console.log(err2);
                     console.log('time: ' + time + ', distance: ' + distance);
                         
                     // at these ranges results are unreliable
