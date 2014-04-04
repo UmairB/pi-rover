@@ -45,7 +45,7 @@ function waitForChange(initial, callback) {
             console.log(end - start);
             console.log(_value);
             
-            return _value === 0 && (end - start) < timeout;
+            return _value === initial && (end - start) < timeout;
         },
         function (callback) {
             gpio.read(pin, function(err, value) {
