@@ -41,10 +41,6 @@ function waitForChange(initial, callback) {
     async.whilst(
         function() {
             var end = new Date();
-            
-            console.log(end - start);
-            console.log(_value);
-            
             return _value === initial && (end - start) < timeout;
         },
         function (callback) {
@@ -58,7 +54,7 @@ function waitForChange(initial, callback) {
 }
 
 function getDistance(time) {
-    // At room temperature and pressure the speed of sound is 340 m/s, time is in milliseconds so
+    // At room temperature and pressure the speed of sound is approx 340 m/s, time is in milliseconds so
     var distance2_in_m = 340 * (time / 1000),
         distance2_in_cm = distance2_in_m * 100;
         
@@ -89,7 +85,10 @@ function getPulseTime (callback) {
                         distance = null;
                     }
                                         
-                    callback(null, distance);
+                    gpio.close(pin, function(err) {
+                        //console.log(err);
+                        callback(null, distance);
+                    });
                 });
             });
         }
@@ -101,11 +100,24 @@ function cleanup () {
 }
 
 module.exports.distance = function(callback) {
-    sendPulse(function (err) {
+    var fn = function(cb) {
+        sendPulse(function (err) {
+            if (err) {
+                callback(err);
+            } else {
+                getPulseTime(cb);
+            }
+        });   
+    };
+    
+    async.series([fn, fn, fn], function(err, distances) {
         if (err) {
             callback(err);
         } else {
-            getPulseTime(callback);
+            distances.sort();
+            var distance = distances[1];
+            
+            callback(null, distance);
         }
     });
 };
