@@ -14,6 +14,9 @@ var timeout = 20;
     Give a short LOW pulse beforehand to ensure a clean HIGH pulse
 */
 var sendPulseObj = {
+    close: function(callback) {
+        gpio.close(pin, callback);  
+    },
     setUp: function(callback) {
         gpio.open(pin, "output", callback);
     },
@@ -75,6 +78,8 @@ function getPulseTime (callback) {
                     // this is the time it took for the pulse to go from HIGH to LOW
                     var time = end - start,
                         distance = getDistance(time);
+                        
+                    console.log('time: ' + time + ', distance: ' + distance);
                         
                     // at these ranges results are unreliable
                     if (distance >= 200 || distance <= 0) {
