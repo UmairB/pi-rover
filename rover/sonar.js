@@ -41,6 +41,10 @@ function waitForChange(initial, callback) {
     async.whilst(
         function() {
             var end = new Date();
+            
+            console.log(end - start);
+            console.log(_value);
+            
             return _value === 0 && (end - start) < timeout;
         },
         function (callback) {
@@ -76,8 +80,8 @@ function getPulseTime (callback) {
                     var time = end - start,
                         distance = getDistance(time);
                         
-                    console.log(err1);
-                    console.log(err2);
+                    //console.log(err1);
+                    //console.log(err2);
                     console.log('time: ' + time + ', distance: ' + distance);
                         
                     // at these ranges results are unreliable
